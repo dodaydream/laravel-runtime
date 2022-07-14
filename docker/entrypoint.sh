@@ -2,15 +2,13 @@
 
 # set permission for folder
 chown -R www-data:www-data /var/www/html
-chown -R www-data:www-data storage bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # install composer dependencies
-composer install --optimize-autoloader --no-dev
+composer install --no-dev --no-interaction --optimize-autoloader
 
 # optimize laravel
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan optimize
 
 # Update nginx to match worker_processes to no. of cpu's
 procs=$(cat /proc/cpuinfo | grep processor | wc -l)
