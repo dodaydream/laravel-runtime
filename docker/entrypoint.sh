@@ -2,10 +2,10 @@
 
 # set permission for folder
 chown -R www-data:www-data /var/www/html
-chown -R www-data:www-data storage bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # install composer dependencies
-composer install --optimize-autoloader --no-dev
+composer install --no-dev --no-interaction --optimize-autoloader
 
 # optimize laravel
 php artisan optimize:clear

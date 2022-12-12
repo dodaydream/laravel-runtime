@@ -1,4 +1,4 @@
-FROM ubuntu:21.04
+FROM ubuntu:22.04
 
 LABEL maintainer="Stanley Cao <contact@stanleytsau.me>"
 LABEL description='A php-fpm and Nginx base image for laravel projects'
@@ -15,35 +15,33 @@ RUN apt-get update \
     && mkdir -p ~/.gnupg \
     && chmod 600 ~/.gnupg \
     && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf \
-    && apt-key adv --homedir ~/.gnupg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E5267A6C \
-    && apt-key adv --homedir ~/.gnupg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C300EE8C
-
-RUN echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu hirsute main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
+    && echo "keyserver hkp://keyserver.ubuntu.com:80" >> ~/.gnupg/dirmngr.conf \
+    && gpg --recv-key 0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c \
+    && gpg --export 0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c > /usr/share/keyrings/ppa_ondrej_php.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
-    && apt-get install -y php8.0-cli php8.0-dev \
-       php8.0-fpm \
-       php8.0-gd \
-       php8.0-curl \
-       php8.0-imap php8.0-mysql php8.0-mbstring \
-       php8.0-xml php8.0-zip php8.0-bcmath php8.0-soap \
-       php8.0-intl php8.0-readline php8.0-pcov \
-       php8.0-msgpack php8.0-igbinary php8.0-ldap \
-       php8.0-redis php8.0-swoole \
-    && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
-
-RUN apt-get install -y mysql-client
-
-RUN apt-get install -y nginx \
+    && apt-get install -y php8.1-cli php8.1-dev \
+       php8.1-pgsql php8.1-sqlite3 php8.1-gd \
+       php8.1-curl \
+       php8.1-imap php8.1-mysql php8.1-mbstring \
+       php8.1-xml php8.1-zip php8.1-bcmath php8.1-soap \
+       php8.1-intl php8.1-readline \
+       php8.1-ldap \
+       php8.1-msgpack php8.1-igbinary php8.1-redis php8.1-swoole \
+       php8.1-memcached php8.1-pcov php8.1-xdebug \
+    && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
+    && apt-get install -y mysql-client \
+    && apt-get install -y postgresql-client-$POSTGRES_VERSION \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.0
+RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.1
 
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY docker/php.ini /etc/php/8.0/cli/conf.d/99-laravel-runtime.ini
-COPY docker/php.ini /etc/php/8.0/fpm/conf.d/99-laravel-runtime.ini
-COPY docker/fpm-pool.conf /etc/php/8.0/fpm/pool.d/www.conf
+COPY docker/php.ini /etc/php/8.1/cli/conf.d/99-laravel-runtime.ini
+COPY docker/php.ini /etc/php/8.1/fpm/conf.d/99-laravel-runtime.ini
+COPY docker/fpm-pool.conf /etc/php/8.1/fpm/pool.d/www.conf
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 
