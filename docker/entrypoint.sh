@@ -8,9 +8,8 @@ chown -R www-data:www-data storage bootstrap/cache
 composer install --optimize-autoloader --no-dev
 
 # optimize laravel
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan optimize:clear
+php artisan optimize
 
 # Update nginx to match worker_processes to no. of cpu's
 procs=$(cat /proc/cpuinfo | grep processor | wc -l)
