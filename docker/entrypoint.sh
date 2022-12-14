@@ -1,15 +1,14 @@
 #!/bin/bash
-
-# set permission for folder
-chown -R www-data:www-data /var/www/html
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
 # install composer dependencies
 composer install --no-dev --no-interaction --optimize-autoloader
 
 # optimize laravel
 php artisan optimize:clear
 php artisan optimize
+
+# set permission for folder
+chown -R www-data:www-data /var/www/html
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Update nginx to match worker_processes to no. of cpu's
 procs=$(cat /proc/cpuinfo | grep processor | wc -l)
