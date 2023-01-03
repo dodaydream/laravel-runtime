@@ -39,6 +39,7 @@ RUN apt-get update \
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.1
 
+
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/php.ini /etc/php/8.1/cli/conf.d/99-laravel-runtime.ini
 COPY docker/php.ini /etc/php/8.1/fpm/conf.d/99-laravel-runtime.ini

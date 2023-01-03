@@ -1,12 +1,16 @@
 #!/bin/bash
-# install composer dependencies
-composer install --no-dev --no-interaction --optimize-autoloader
+# install composer dependencies (skip if vendor folder exists)
+if [ ! -d "vendor" ]; then
+  composer install --no-dev --no-interaction --optimize-autoloader
+fi
 
-# optimize laravel
-php artisan optimize:clear
-php artisan optimize
+# Optimize laravel
+# @see: https://laravel.com/docs/9.x/deployment#optimization
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-# set permission for folder
+# Change ownership for folder
 chown -R www-data:www-data /var/www/html
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
